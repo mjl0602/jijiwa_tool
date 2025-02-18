@@ -1,0 +1,83 @@
+name: jijiwa_tool
+description: "A new Flutter project."
+# The following line prevents the package from being accidentally published to
+# pub.dev using `flutter pub publish`. This is preferred for private packages.
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
+
+# The following defines the version and build number for your application.
+# A version number is three numbers separated by dots, like 1.2.43
+# followed by an optional build number separated by a +.
+# Both the version and the builder number may be overridden in flutter
+# build by specifying --build-name and --build-number, respectively.
+# In Android, build-name is used as versionName while build-number used as versionCode.
+# Read more about Android versioning at https://developer.android.com/studio/publish/versioning
+# In iOS, build-name is used as CFBundleShortVersionString while build-number is used as CFBundleVersion.
+# Read more about iOS versioning at
+# https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
+# In Windows, build-name is used as the major, minor, and patch parts
+# of the product and file versions while build-number is used as the build suffix.
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.5.3 <4.0.0"
+
+# NOTE:重要配置
+flutter_intl:
+  enabled: true
+  arb_dir: lib/l10n
+  output_dir: lib/l10n/generated
+
+# Dependencies specify other packages that your package needs in order to work.
+# To automatically upgrade your package dependencies to the latest versions
+# consider running `flutter pub upgrade --major-versions`. Alternatively,
+# dependencies can be manually updated by changing the version numbers below to
+# the latest version available on pub.dev. To see which dependencies have newer
+# versions available, run `flutter pub outdated`.
+dependencies:
+  flutter:
+    sdk: flutter
+  # 点按
+  tapped: ^2.0.0
+  # 本地储存
+  local_cache_sync: ^3.1.1
+  # Map取值
+  safemap: ^2.1.0
+  # 调试
+  fconsole: ^2.6.1
+  # 弹窗库
+  oktoast: ^3.4.0
+  # 国际化
+  intl: ^0.19.0
+  # 打电话，启动其他App
+  url_launcher: ^6.0.3
+  # 不能生成就运行： flutter pub run intl_utils:generate
+  intl_utils: ^2.8.7
+  # 屏幕
+  wakelock_plus: ^1.2.8
+  left_scroll_actions: ^2.1.2
+  # 数据库
+  isar: ^3.1.0+1
+  isar_flutter_libs: ^3.1.0+1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  isar_generator: ^3.1.0
+  build_runner: 2.4.13
+
+dependency_overrides:
+  share_plus: ^10.1.2
+  analyzer: ^6.0.0
+
+# The following section is specific to Flutter packages.
+flutter:
+  # To add assets to your application, add an assets section, like this:
+  assets:
+    # fmaker
+    - assets/example.png
+    # fmaker-end
+
+  # The following line ensures that the Material Icons font is
+  # included with your application, so that you can use the icons in
+  # the material Icons class.
+  uses-material-design: true
