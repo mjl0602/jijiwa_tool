@@ -126,29 +126,24 @@ class GameRoom extends ChangeNotifier {
         .limit(100)
         .findAll();
     if (list.isEmpty) return;
-    DateTime lastDate = list.first.recordAt!;
-    bool gapFound = false;
-    Set<int> userDone = Set();
-    for (var item in list) {
-      if (lastDate.difference(item.recordAt!).inMilliseconds < 1500) {
-        lastDate = item.recordAt!;
-        await isar.writeTxn(() async {
-          await isar.scoreEdits.delete(item.id);
-        });
-        gapFound = true;
-        continue;
-      }
-      if (gapFound && !userDone.contains(item.playerId!)) {
-        userDone.add(item.playerId!);
-        await isar.writeTxn(() async {
-          final p = await isar.players.get(item.playerId!);
-          if (p != null) {
-            p.score = item.score;
-            await isar.players.put(p);
+    final slices = ScoreSlice.generateScoreSlices(list);
+    final slice = slices.removeAt(0);
+    await isar.writeTxn(() async {
+      await isar.scoreEdits.deleteAll(slice.edits.map((e) => e.id).toList());
+      if (slices.isEmpty) {
+        for (var player in players) {
+          player.score = 0;
+        }
+      } else {
+        final config = slices.first.finalScores;
+        for (var player in players) {
+          if (config.containsKey(player.id)) {
+            player.score = config[player.id]!;
           }
-        });
+        }
       }
-    }
+      await isar.players.putAll(players);
+    });
     reloadPlayers();
   }
 
@@ -247,5 +242,61 @@ class GameRoom extends ChangeNotifier {
       await isar.scoreEdits.put(scoreEdit);
     });
     notifyListeners();
+  }
+}
+
+class ScoreSlice {
+  List<ScoreEdit> edits;
+
+  ScoreSlice(this.edits);
+
+  // 计算并返回当前切片的最终分数状态
+  Map<int, int> get finalScores {
+    Map<int, int> scores = {};
+    for (var edit in edits) {
+      // 确保playerId不为空
+      if (edit.playerId != null && !scores.containsKey(edit.playerId!)) {
+        scores[edit.playerId!] = edit.score;
+      }
+    }
+    return scores;
+  }
+
+  static List<ScoreSlice> generateScoreSlices(List<ScoreEdit> edits) {
+    // 检查输入列表是否为空
+    if (edits.isEmpty) {
+      return [];
+    }
+
+    // 首先，确保edits按recordAt时间排序
+    edits.sort((b, a) => a.recordAt!.compareTo(b.recordAt!));
+
+    // 初始化结果列表
+    List<ScoreSlice> slices = [];
+    // 初始化当前切片列表，并将第一个编辑操作加入其中
+    List<ScoreEdit> currentSliceEdits = [edits.first];
+
+    // 从第二个编辑操作开始遍历
+    for (int i = 1; i < edits.length; i++) {
+      // 计算时间差
+      Duration diff = edits[i - 1].recordAt!.difference(edits[i].recordAt!);
+      // 如果时间差大于1秒，开始一个新的切片
+      if (diff.inSeconds > 1) {
+        // 将当前切片加入到结果列表中
+        slices.add(ScoreSlice(currentSliceEdits));
+        // 重置当前切片为一个新的列表，包含当前编辑操作
+        currentSliceEdits = [edits[i]];
+      } else {
+        // 否则，将当前编辑操作加入到当前切片中
+        currentSliceEdits.add(edits[i]);
+      }
+    }
+
+    // 不要忘记将最后一个切片加入到结果列表中
+    slices.add(ScoreSlice(currentSliceEdits));
+    for (var each in slices) {
+      print(each.finalScores);
+    }
+    return slices;
   }
 }
