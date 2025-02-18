@@ -6,6 +6,7 @@ import 'package:jijiwa_tool/pages/player_edit_sheet.dart';
 import 'package:jijiwa_tool/style/color.dart';
 import 'package:jijiwa_tool/style/text.dart';
 import 'package:jijiwa_tool/view/tap_button.dart';
+import 'package:oktoast/oktoast.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -21,9 +22,9 @@ class _HomePageState extends State<HomePage> {
 
   double get rowHeight {
     final data = MediaQuery.of(context);
-    return ((data.size.height - 200 - data.padding.top - data.padding.bottom) /
+    return ((data.size.height - 220 - data.padding.top - data.padding.bottom) /
             gameRoom.players.length)
-        .clamp(74, 200);
+        .clamp(74, 220);
   }
 
   @override
@@ -47,7 +48,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: StText.big('🌲叽叽蛙记分'),
+        title: StText.big('🐔叽叽蛙记分'),
         actions: [
           // IconButton(
           //   icon: Icon(Icons.more_horiz),
@@ -251,7 +252,11 @@ class _HomePageState extends State<HomePage> {
                   Spacer(),
                   CanTap(
                     onTap: () async {
+                      showToast('长按重新开始');
+                    },
+                    onLongTap: () async {
                       gameRoom.restart();
+                      showToast('重新开始');
                     },
                     child: Container(
                       height: 52,
