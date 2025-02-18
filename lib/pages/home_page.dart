@@ -19,9 +19,12 @@ class _HomePageState extends State<HomePage> {
 
   Set<int> expandRow = Set();
 
-  double get rowHeight =>
-      ((MediaQuery.of(context).size.height - 220) / gameRoom.players.length)
-          .clamp(74, 200);
+  double get rowHeight {
+    final data = MediaQuery.of(context);
+    return ((data.size.height - 200 - data.padding.top - data.padding.bottom) /
+            gameRoom.players.length)
+        .clamp(74, 200);
+  }
 
   @override
   void initState() {
@@ -46,12 +49,12 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: StText.big('🌲叽叽蛙记分'),
         actions: [
-          IconButton(
-            icon: Icon(Icons.more_horiz),
-            onPressed: () {
-              gameRoom.startGame();
-            },
-          ),
+          // IconButton(
+          //   icon: Icon(Icons.more_horiz),
+          //   onPressed: () {
+          //     gameRoom.startGame();
+          //   },
+          // ),
         ],
       ),
       body: Column(
