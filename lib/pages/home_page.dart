@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:jijiwa_tool/database/player.dart';
 import 'package:jijiwa_tool/db_service/game_room.dart';
 import 'package:jijiwa_tool/global/data_base.dart';
+import 'package:jijiwa_tool/pages/keyboard_sheet.dart';
 import 'package:jijiwa_tool/pages/player_edit_sheet.dart';
 import 'package:jijiwa_tool/style/color.dart';
 import 'package:jijiwa_tool/style/text.dart';
@@ -162,26 +163,26 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ),
                         Spacer(),
-                        CanTap(
-                          onTap: () {},
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: ColorPalette.lightGray,
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 10,
-                            ),
-                            child: Center(
-                              child: Icon(
-                                Icons.undo,
-                                color: ColorPalette.gray,
-                                size: 18,
-                              ),
-                            ),
-                          ),
-                        ),
+                        // CanTap(
+                        //   onTap: () {},
+                        //   child: Container(
+                        //     decoration: BoxDecoration(
+                        //       color: ColorPalette.lightGray,
+                        //       borderRadius: BorderRadius.circular(6),
+                        //     ),
+                        //     padding: EdgeInsets.symmetric(
+                        //       horizontal: 16,
+                        //       vertical: 10,
+                        //     ),
+                        //     child: Center(
+                        //       child: Icon(
+                        //         Icons.undo,
+                        //         color: ColorPalette.gray,
+                        //         size: 18,
+                        //       ),
+                        //     ),
+                        //   ),
+                        // ),
                       ],
                     ),
                   ),
@@ -359,6 +360,15 @@ class _PlayerRow extends StatelessWidget {
                   children: [
                     _BasicCalculateBtn(
                       onTap: () => onEdit(player.score - 1, '-1'),
+                      onLongTap: () async {
+                        final edit = await KeyboardSheet.show(
+                          context,
+                          player,
+                          ActType.reduce,
+                        );
+                        if (edit == null) return;
+                        onEdit(edit.score, edit.description);
+                      },
                       child: Icon(
                         Icons.remove,
                         size: 16,
@@ -386,6 +396,15 @@ class _PlayerRow extends StatelessWidget {
                     ),
                     _BasicCalculateBtn(
                       onTap: () => onEdit(player.score + 1, '+1'),
+                      onLongTap: () async {
+                        final edit = await KeyboardSheet.show(
+                          context,
+                          player,
+                          ActType.add,
+                        );
+                        if (edit == null) return;
+                        onEdit(edit.score, edit.description);
+                      },
                       child: Icon(
                         Icons.add,
                         size: 16,
@@ -491,10 +510,12 @@ class _BasicCalculateBtn extends StatelessWidget {
     super.key,
     required this.child,
     required this.onTap,
+    required this.onLongTap,
   });
 
   final Widget child;
   final Function onTap;
+  final Function onLongTap;
 
   @override
   Widget build(BuildContext context) {
@@ -504,6 +525,7 @@ class _BasicCalculateBtn extends StatelessWidget {
       ),
       child: CanTap(
         onTap: onTap,
+        onLongTap: onLongTap,
         child: Container(
           // color: ColorPalette.gray,
           child: Center(
