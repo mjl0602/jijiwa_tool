@@ -1,6 +1,3 @@
-import 'dart:ui';
-
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
 import 'package:jijiwa_tool/config/emoji.dart';
@@ -8,7 +5,6 @@ import 'package:jijiwa_tool/database/game.dart';
 import 'package:jijiwa_tool/database/player.dart';
 import 'package:jijiwa_tool/database/score_edit.dart';
 import 'package:jijiwa_tool/global/data_base.dart';
-import 'package:jijiwa_tool/style/color.dart';
 
 class GameRoom extends ChangeNotifier {
   Game? currentGame;
