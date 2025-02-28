@@ -27,15 +27,24 @@ if [[ $1 =~ "a" ]]; then
   # 获取当前时间
   CURRENT_TIME=$(date "+%Y-%m-%d %H:%M:%S")
 
-  # 指定文件路径（将文件保存到当前用户的桌面上）
-  FILE_PATH="$HOME/Desktop/app_info.txt"
-
   APP_SIZE=$(du -h "./release-apk/$APP_INFO.apk")
 
   # 将信息写入到文件
-  echo -e "时间: $CURRENT_TIME\n版本: $APP_INFO\n链接: $PUBLISH_URL\n大小: $APP_SIZE\n\n" >> "$FILE_PATH"
+  # echo -e "时间: $CURRENT_TIME\n版本: $APP_INFO\n链接: $PUBLISH_URL\n大小: $APP_SIZE\n\n" >>"$FILE_PATH"
+  osascript <<EOF
+tell application "Stickies"
+    activate
+    delay 0.5
+    tell application "System Events"
+        keystroke "n" using {command down}  -- 新建便签
+        delay 0.5
+        set the clipboard to "时间: $CURRENT_TIME\n版本: $APP_INFO\n链接: $PUBLISH_URL\n大小: $APP_SIZE\n\n"  -- 将内容复制到剪贴板
+        delay 0.5
+        keystroke "v" using {command down}  -- 粘贴内容
+    end tell
+end tell
+EOF
 
-  open $FILE_PATH
 fi
 
 if [[ $1 =~ "i" ]]; then
