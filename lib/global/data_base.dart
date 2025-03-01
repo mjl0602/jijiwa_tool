@@ -2,6 +2,7 @@ import 'package:isar/isar.dart';
 import 'package:jijiwa_tool/database/game.dart';
 import 'package:jijiwa_tool/database/player.dart';
 import 'package:jijiwa_tool/database/score_edit.dart';
+import 'package:jijiwa_tool/database/cache.dart';
 import 'package:path_provider/path_provider.dart';
 
 late Isar isar;
@@ -15,6 +16,7 @@ abstract class DataBase {
         GameSchema,
         ScoreEditSchema,
         PlayerSchema,
+        IsarCacheItemSchema,
       ],
       directory: dir.path,
     );

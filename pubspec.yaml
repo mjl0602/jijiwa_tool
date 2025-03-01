@@ -38,8 +38,6 @@ dependencies:
     sdk: flutter
   # 点按
   tapped: ^2.0.0
-  # 本地储存
-  local_cache_sync: ^3.1.1
   # Map取值
   safemap: ^2.1.0
   # 调试

@@ -12,9 +12,7 @@ import 'package:jijiwa_tool/l10n/generated/l10n.dart';
 import 'package:jijiwa_tool/pages/home_page.dart';
 import 'package:jijiwa_tool/style/color.dart';
 import 'package:jijiwa_tool/style/theme.dart';
-import 'package:local_cache_sync/local_cache_sync.dart';
 import 'package:oktoast/oktoast.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
 typedef ErrHandler = void Function(
@@ -30,14 +28,6 @@ void main() async {
     ),
     beforeRun: () async {
       WidgetsFlutterBinding.ensureInitialized();
-      LocalCacheSync.instance!.setCachePath(
-        await getTemporaryDirectory(),
-        'JijiWaCache/',
-      );
-      UserDefaultSync.setCachePath(
-        await getApplicationSupportDirectory(),
-        'JijiWaCache/',
-      );
       await DataBase.init();
       LocaleManager.instance.init();
 

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:local_cache_sync/local_cache_sync.dart';
+import 'package:jijiwa_tool/database/cache.dart';
 
 class LocaleManager {
   factory LocaleManager() => instance;
@@ -19,7 +19,7 @@ class LocaleManager {
         Locale.fromSubtags(languageCode: defLocale);
   }
 
-  static var cacheLocale = DefaultValueCache<String>('cacheLocale', '');
+  static var cacheLocale = IsarUserDefault<String>('cacheLocale', '');
 
   static const List<String> localeList = <String>[
     '',
