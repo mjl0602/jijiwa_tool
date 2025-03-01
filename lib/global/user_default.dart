@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:jijiwa_tool/database/cache.dart';
 
 const kApiCacheChannel = 'api_cache';
@@ -22,17 +20,6 @@ class UserDefault {
   static var canDebug = IsarUserDefault('canDebug', false);
   static var fconsoleShow = IsarUserDefault('fconsoleShow', false);
   static var debugHomePage = IsarUserDefault('debugHomePage', false);
-
-  static var locale = IsarUserDefault<Locale?>(
-    'locale',
-    null,
-    builder: (str) {
-      if (str == null || str == '') return null;
-      var l = str.split('-');
-      return Locale(l.first, l.last);
-    },
-    parser: (Locale? value) => value?.toLanguageTag(),
-  );
 
   // 字体大小设置
   static var fontSize = IsarUserDefault<int?>('fontSize', null);

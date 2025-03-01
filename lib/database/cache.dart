@@ -37,6 +37,15 @@ class IsarUserDefault<T> extends ValueNotifier<T> {
     );
     super.value = this.value;
   }
+
+  setRawValue(String value) {
+    IsarCacheItem.setWithKeySync<T?>(
+      key,
+      null,
+      parser: (_) => value,
+    );
+    super.value = this.value;
+  }
 }
 
 // 运行 dart run build_runner build

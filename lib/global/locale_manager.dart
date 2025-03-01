@@ -19,7 +19,16 @@ class LocaleManager {
         Locale.fromSubtags(languageCode: defLocale);
   }
 
-  static var cacheLocale = IsarUserDefault<String>('cacheLocale', '');
+  static var locale = IsarUserDefault<Locale?>(
+    'locale',
+    null,
+    builder: (str) {
+      if (str == null || str == '') return null;
+      var l = str.split('-');
+      return Locale(l.first, l.last);
+    },
+    parser: (Locale? value) => value?.toLanguageTag(),
+  );
 
   static const List<String> localeList = <String>[
     '',
@@ -27,26 +36,15 @@ class LocaleManager {
     'zh',
   ];
 
-  static Locale? stringToLocale(String value) {
-    final List<String> locale = value.split('_');
-    if (locale.isNotEmpty && locale.first.isNotEmpty) {
-      return Locale(locale.first, locale.last);
-    }
-
-    return null;
-  }
-
   void init() {
-    localeNotifier.value = stringToLocale(cacheLocale.value);
+    localeNotifier.value = locale.value;
   }
 
   void switchLocale(String value) {
     if (!localeList.contains(value)) {
       return;
     }
-
-    localeNotifier.value = stringToLocale(value);
-
-    cacheLocale.value = value;
+    locale.setRawValue(value);
+    localeNotifier.value = locale.value;
   }
 }
