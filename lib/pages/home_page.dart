@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jijiwa_tool/database/player.dart';
 import 'package:jijiwa_tool/db_service/game_room.dart';
-import 'package:jijiwa_tool/global/data_base.dart';
 import 'package:jijiwa_tool/pages/keyboard_sheet.dart';
 import 'package:jijiwa_tool/pages/player_edit_sheet.dart';
 import 'package:jijiwa_tool/style/color.dart';
@@ -86,13 +85,13 @@ class _HomePageState extends State<HomePage> {
                       await gameRoom.removePlayer(player);
                     },
                     onTapPlayer: () async {
-                      final newPlayerConfig =
-                          await PlayerEditSheet.show(context, player);
+                      final newPlayerConfig = await PlayerEditSheet.show(
+                        context,
+                        player,
+                        await gameRoom.queryMostUsePlayers(),
+                      );
                       if (newPlayerConfig == null) return;
-                      await isar.writeTxn(() async {
-                        await isar.players.put(player);
-                      });
-                      await gameRoom.reloadPlayers();
+                      await gameRoom.savePlayer(player);
                     },
                   ),
                 Container(

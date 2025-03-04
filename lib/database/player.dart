@@ -7,6 +7,7 @@ part 'player.g.dart';
 class Player {
   Id id = Isar.autoIncrement;
 
+  // 房间号，为空时代表是常用玩家记录
   int? gameId;
 
   String? emoji;

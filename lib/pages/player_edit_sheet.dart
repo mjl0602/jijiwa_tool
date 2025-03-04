@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jijiwa_tool/database/player.dart';
 import 'package:jijiwa_tool/db_service/game_room.dart';
+import 'package:jijiwa_tool/global/data_base.dart';
 import 'package:jijiwa_tool/style/color.dart';
 import 'package:jijiwa_tool/style/text.dart';
 import 'package:jijiwa_tool/tools/input_helper.dart';
@@ -12,11 +13,17 @@ class PlayerEditSheet extends StatefulWidget {
   const PlayerEditSheet({
     super.key,
     required this.player,
+    required this.quickPickPlayers,
   });
 
   final Player player;
+  final List<Player> quickPickPlayers;
 
-  static Future<Player?> show(BuildContext context, Player player) async {
+  static Future<Player?> show(
+    BuildContext context,
+    Player player,
+    List<Player> quickPickPlayers,
+  ) async {
     final result = await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -34,7 +41,10 @@ class PlayerEditSheet extends StatefulWidget {
               ),
             ),
             Expanded(
-              child: PlayerEditSheet(player: player),
+              child: PlayerEditSheet(
+                player: player,
+                quickPickPlayers: quickPickPlayers,
+              ),
             ),
           ],
         ),
@@ -57,6 +67,8 @@ class _PlayerEditSheetState extends State<PlayerEditSheet> {
     defaultText: widget.player.name,
   );
 
+  late List<Player> quickPickPlayers = widget.quickPickPlayers;
+
   @override
   Widget build(BuildContext context) {
     return TapToCancelFocus(
@@ -75,14 +87,6 @@ class _PlayerEditSheetState extends State<PlayerEditSheet> {
                 padding: EdgeInsets.symmetric(
                   horizontal: 12,
                   vertical: 12,
-                ),
-                decoration: BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(
-                      width: 6,
-                      color: ColorPalette.lightGray,
-                    ),
-                  ),
                 ),
                 child: Row(
                   children: [
@@ -164,6 +168,83 @@ class _PlayerEditSheetState extends State<PlayerEditSheet> {
                   ],
                 ),
               ),
+              if (quickPickPlayers.isEmpty)
+                Container(
+                  height: 6,
+                  width: double.infinity,
+                  color: ColorPalette.lightGray,
+                ),
+              if (quickPickPlayers.isNotEmpty)
+                Container(
+                  height: 30,
+                  child: ListView.builder(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 6,
+                    ),
+                    scrollDirection: Axis.horizontal,
+                    itemCount: quickPickPlayers.length,
+                    itemBuilder: (context, index) {
+                      final _p = quickPickPlayers[index];
+                      return CanTap(
+                        onTap: () {
+                          setState(() {
+                            name.text = _p.name;
+                            emoji = _p.emoji;
+                            color = Color(_p.color);
+                          });
+                        },
+                        child: Container(
+                          padding: EdgeInsets.only(
+                            left: 10,
+                            bottom: 2,
+                            top: 2,
+                          ),
+                          margin: EdgeInsets.symmetric(
+                            horizontal: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Color(_p.color),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Row(
+                            children: [
+                              Container(
+                                padding: EdgeInsets.only(right: 6),
+                                child: StText.small(_p.emoji),
+                              ),
+                              StText.small(
+                                _p.name,
+                                style: TextStyle(
+                                  color: ColorPalette.white,
+                                  height: oneLineH,
+                                ),
+                              ),
+                              CanTap(
+                                onTap: () async {
+                                  await isar.writeTxn(() async {
+                                    await isar.players.delete(_p.id);
+                                  });
+                                  setState(() {
+                                    quickPickPlayers.remove(_p);
+                                  });
+                                },
+                                child: Container(
+                                  // color: ColorPalette.white,
+                                  padding: EdgeInsets.fromLTRB(8, 4, 8, 4),
+                                  child: Icon(
+                                    Icons.close,
+                                    size: 14,
+                                    color: ColorPalette.white,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
               Container(
                 width: double.infinity,
                 margin: EdgeInsets.only(top: 8),

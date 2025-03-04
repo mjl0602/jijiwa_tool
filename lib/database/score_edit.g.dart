@@ -32,13 +32,18 @@ const ScoreEditSchema = CollectionSchema(
       name: r'playerId',
       type: IsarType.long,
     ),
-    r'recordAt': PropertySchema(
+    r'previousScore': PropertySchema(
       id: 3,
+      name: r'previousScore',
+      type: IsarType.long,
+    ),
+    r'recordAt': PropertySchema(
+      id: 4,
       name: r'recordAt',
       type: IsarType.dateTime,
     ),
     r'score': PropertySchema(
-      id: 4,
+      id: 5,
       name: r'score',
       type: IsarType.long,
     )
@@ -81,8 +86,9 @@ void _scoreEditSerialize(
   writer.writeString(offsets[0], object.description);
   writer.writeLong(offsets[1], object.gameId);
   writer.writeLong(offsets[2], object.playerId);
-  writer.writeDateTime(offsets[3], object.recordAt);
-  writer.writeLong(offsets[4], object.score);
+  writer.writeLong(offsets[3], object.previousScore);
+  writer.writeDateTime(offsets[4], object.recordAt);
+  writer.writeLong(offsets[5], object.score);
 }
 
 ScoreEdit _scoreEditDeserialize(
@@ -95,8 +101,9 @@ ScoreEdit _scoreEditDeserialize(
     description: reader.readStringOrNull(offsets[0]),
     gameId: reader.readLongOrNull(offsets[1]),
     playerId: reader.readLongOrNull(offsets[2]),
-    recordAt: reader.readDateTimeOrNull(offsets[3]),
-    score: reader.readLongOrNull(offsets[4]) ?? 0,
+    previousScore: reader.readLongOrNull(offsets[3]) ?? 0,
+    recordAt: reader.readDateTimeOrNull(offsets[4]),
+    score: reader.readLongOrNull(offsets[5]) ?? 0,
   );
   object.id = id;
   return object;
@@ -116,8 +123,10 @@ P _scoreEditDeserializeProp<P>(
     case 2:
       return (reader.readLongOrNull(offset)) as P;
     case 3:
-      return (reader.readDateTimeOrNull(offset)) as P;
+      return (reader.readLongOrNull(offset) ?? 0) as P;
     case 4:
+      return (reader.readDateTimeOrNull(offset)) as P;
+    case 5:
       return (reader.readLongOrNull(offset) ?? 0) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -559,6 +568,62 @@ extension ScoreEditQueryFilter
     });
   }
 
+  QueryBuilder<ScoreEdit, ScoreEdit, QAfterFilterCondition>
+      previousScoreEqualTo(int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'previousScore',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<ScoreEdit, ScoreEdit, QAfterFilterCondition>
+      previousScoreGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'previousScore',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<ScoreEdit, ScoreEdit, QAfterFilterCondition>
+      previousScoreLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'previousScore',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<ScoreEdit, ScoreEdit, QAfterFilterCondition>
+      previousScoreBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'previousScore',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
   QueryBuilder<ScoreEdit, ScoreEdit, QAfterFilterCondition> recordAtIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
@@ -726,6 +791,18 @@ extension ScoreEditQuerySortBy on QueryBuilder<ScoreEdit, ScoreEdit, QSortBy> {
     });
   }
 
+  QueryBuilder<ScoreEdit, ScoreEdit, QAfterSortBy> sortByPreviousScore() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'previousScore', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ScoreEdit, ScoreEdit, QAfterSortBy> sortByPreviousScoreDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'previousScore', Sort.desc);
+    });
+  }
+
   QueryBuilder<ScoreEdit, ScoreEdit, QAfterSortBy> sortByRecordAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'recordAt', Sort.asc);
@@ -801,6 +878,18 @@ extension ScoreEditQuerySortThenBy
     });
   }
 
+  QueryBuilder<ScoreEdit, ScoreEdit, QAfterSortBy> thenByPreviousScore() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'previousScore', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ScoreEdit, ScoreEdit, QAfterSortBy> thenByPreviousScoreDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'previousScore', Sort.desc);
+    });
+  }
+
   QueryBuilder<ScoreEdit, ScoreEdit, QAfterSortBy> thenByRecordAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'recordAt', Sort.asc);
@@ -847,6 +936,12 @@ extension ScoreEditQueryWhereDistinct
     });
   }
 
+  QueryBuilder<ScoreEdit, ScoreEdit, QDistinct> distinctByPreviousScore() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'previousScore');
+    });
+  }
+
   QueryBuilder<ScoreEdit, ScoreEdit, QDistinct> distinctByRecordAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'recordAt');
@@ -883,6 +978,12 @@ extension ScoreEditQueryProperty
   QueryBuilder<ScoreEdit, int?, QQueryOperations> playerIdProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'playerId');
+    });
+  }
+
+  QueryBuilder<ScoreEdit, int, QQueryOperations> previousScoreProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'previousScore');
     });
   }
 

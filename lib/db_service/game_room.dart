@@ -220,12 +220,48 @@ class GameRoom extends ChangeNotifier {
     notifyListeners();
   }
 
+  // 保存玩家名称+头像
+  Future<void> savePlayer(Player player) async {
+    await isar.writeTxn(() async {
+      await isar.players.put(player);
+      if (player.name?.isNotEmpty == true) {
+        // 有姓名的话，保存为常用的玩家名称+头像
+        Player? _cachePlayer = await isar.players
+            .filter()
+            .gameIdIsNull()
+            .nameEqualTo(player.name)
+            .findFirst();
+        _cachePlayer ??= Player();
+        _cachePlayer.gameId = null;
+        _cachePlayer.name = player.name;
+        _cachePlayer.emoji = player.emoji;
+        _cachePlayer.color = player.color;
+        await isar.players.put(_cachePlayer);
+      }
+    });
+    await reloadPlayers();
+  }
+
+  // 查询常用的玩家名称+头像，不含当前正在房间中的玩家
+  Future<List<Player>> queryMostUsePlayers() async {
+    final _players = await isar.players
+        .filter()
+        .gameIdIsNull()
+        .nameIsNotNull()
+        .sortBySort()
+        .findAll();
+    // 找到不在本房间的玩家
+    final nameSet = players.map((p) => p.name).toSet();
+    return _players.where((p) => !nameSet.contains(p.name)).toList();
+  }
+
   Future<void> putScore(
     Player player,
     int newScore,
     String description,
   ) async {
     await isar.writeTxn(() async {
+      final previousScore = player.score;
       player.score = newScore;
       await isar.players.put(player);
       final scoreEdit = ScoreEdit(
@@ -233,6 +269,7 @@ class GameRoom extends ChangeNotifier {
         playerId: player.id,
         description: description,
         score: newScore,
+        previousScore: previousScore,
         recordAt: DateTime.now(),
       );
       await isar.scoreEdits.put(scoreEdit);

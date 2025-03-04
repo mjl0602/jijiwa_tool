@@ -15,12 +15,15 @@ class ScoreEdit {
 
   int score = 0;
 
+  int previousScore = 0;
+
   DateTime? recordAt;
 
   ScoreEdit({
     this.gameId,
     this.playerId,
     this.score = 0,
+    this.previousScore = 0,
     this.description,
     this.recordAt,
   });
