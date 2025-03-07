@@ -65,6 +65,7 @@ dev_dependencies:
 
 dependency_overrides:
   share_plus: ^10.1.2
+  device_info_plus: ^10.1.2
   analyzer: ^6.0.0
 
 # The following section is specific to Flutter packages.
